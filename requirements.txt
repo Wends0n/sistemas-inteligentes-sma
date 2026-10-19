@@ -1,0 +1,3 @@
+# Apenas pós-processamento; o solver C não depende destes pacotes.
+numpy==2.3.5
+matplotlib==3.10.8
