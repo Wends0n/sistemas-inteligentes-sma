@@ -1,0 +1,3 @@
+configuracao,population,z,ta001_makespan_medio,ta011_makespan_medio,objetivo_medio
+Baseline,30,0.03,1298.2,1650.8,1474.5
+Tunada (Optuna),60,0.016352237670518934,1297.0,1635.8,1466.4

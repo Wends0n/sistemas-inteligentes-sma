@@ -1,0 +1,41 @@
+{
+  "study": "sma_pfs_static_hyperparameters",
+  "trials": 30,
+  "runs_per_instance": 5,
+  "iterations": 300,
+  "seed": 20261026,
+  "best_trial": 3,
+  "best_params": {
+    "population": 60,
+    "z": 0.016352237670518934
+  },
+  "best_value": 1466.4,
+  "baseline": {
+    "objective": 1474.5,
+    "ta001_mean": 1298.2,
+    "ta011_mean": 1650.8
+  },
+  "tuned": {
+    "objective": 1466.4,
+    "ta001_mean": 1297.0,
+    "ta011_mean": 1635.8
+  },
+  "comparison": [
+    {
+      "configuracao": "Baseline",
+      "population": 30,
+      "z": 0.03,
+      "ta001_makespan_medio": 1298.2,
+      "ta011_makespan_medio": 1650.8,
+      "objetivo_medio": 1474.5
+    },
+    {
+      "configuracao": "Tunada (Optuna)",
+      "population": 60,
+      "z": 0.016352237670518934,
+      "ta001_makespan_medio": 1297.0,
+      "ta011_makespan_medio": 1635.8,
+      "objetivo_medio": 1466.4
+    }
+  ]
+}
