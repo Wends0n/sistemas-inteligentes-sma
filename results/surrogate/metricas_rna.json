@@ -1,0 +1,41 @@
+{
+  "model": "MLPRegressor (20-32-16-1), ReLU/linear; um modelo por instância",
+  "sampling": "Latin Hypercube Sampling",
+  "samples_per_instance": 1500,
+  "total_samples": 3000,
+  "features": 20,
+  "por_instancia": {
+    "ta001": {
+      "mse": 2382.370073481882,
+      "rmse": 48.809528511161446,
+      "r2": 0.3594664733059495,
+      "n_treino": 1200,
+      "n_teste": 300,
+      "media_y_teste": 1514.6033333333332,
+      "desvio_y_teste": 60.98649568187662,
+      "iteracoes_treino": 102,
+      "tempo_treino_s": 0.24760816700000987
+    },
+    "ta011": {
+      "mse": 5276.666990289804,
+      "rmse": 72.6406703595844,
+      "r2": 0.23893043028700545,
+      "n_treino": 1200,
+      "n_teste": 300,
+      "media_y_teste": 2023.8333333333333,
+      "desvio_y_teste": 83.26599279150855,
+      "iteracoes_treino": 72,
+      "tempo_treino_s": 0.19082540499999823
+    }
+  },
+  "mse": 3829.518531885843,
+  "rmse": 60.725099435372925,
+  "r2": 0.29919845179647747,
+  "nota_metricas_agregadas": "mse/rmse/r2 acima = média das métricas por instância (métrica oficial).",
+  "agregado_empilhado_nao_usar_para_r2": {
+    "mse": 3829.5185318858435,
+    "rmse": 61.883103767392306,
+    "r2": 0.9454135305420976,
+    "aviso": "R2 calculado sobre as duas instâncias empilhadas é inflado pela diferença entre as médias de ta001 e ta011 e NÃO mede a qualidade do surrogate; mantido só para comparação com a versão anterior."
+  }
+}

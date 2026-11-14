@@ -1,0 +1,16 @@
+{
+  "arquitetura": [
+    20,
+    32,
+    16,
+    1
+  ],
+  "modelos": {
+    "ta001": "modelo 0 (5 máquinas)",
+    "ta011": "modelo 1 (10 máquinas)"
+  },
+  "ativacao_ocultas": "ReLU",
+  "saida": "linear",
+  "normalizacao": "StandardScaler para X e y",
+  "pesos_exportados_para": "src/surrogate_model.c"
+}

@@ -1,0 +1,3 @@
+instancia,repeticoes_tempo,avaliacoes_por_execucao,tempo_mediano_objetivo_real_s,tempo_mediano_surrogate_s,us_por_avaliacao_real,us_por_avaliacao_surrogate,ganho_tempo_percentual,makespan_medio_solucao_real,makespan_medio_solucao_surrogate_reavaliado_real,makespan_medio_previsto_surrogate
+ta001,5,2000,0.0022933359999797176,0.0028060370000275725,1.1466679999898588,1.4030185000137863,-22.356122262607364,1307.8,1400.0,1284.2602823034547
+ta011,5,2000,0.002372847999993155,0.002995256000019708,1.1864239999965775,1.497628000009854,-26.23042015452943,1685.8,1882.6,1734.1839607051038
