@@ -218,3 +218,28 @@ geral. O relatório apresenta os resultados sem esconder estagnação ou dispers
 6. Dias, Wendson Menezes. **Slime Mould Algorithm: formulação matemática,
    representação e configuração dos testes**. Documento fornecido na solicitação,
    arquivo `sitemas_inteligentes-1(2).pdf`, 4 páginas.
+
+
+## Extensões — Semanas 4 e 5
+
+O pacote também contém o pipeline de **Surrogate MLP** e o **controlador fuzzy
+adaptativo**. A documentação completa, métricas, regras, resultados e comandos
+de reprodução estão em [`docs/SEMANAS_4_5.md`](docs/SEMANAS_4_5.md).
+
+Resumo dos arquivos novos:
+- `scripts/smalib.py`: utilidades compartilhadas (ctypes, PFS, execução do solver).
+- `scripts/surrogate_fuzzy.py`: amostragem LHS, treino/teste da MLP, métricas por
+  instância, exportação dos pesos para C, benchmark de tempo (inclusive objetivo
+  caro simulado) e execução adaptativa com o surrogate.
+- `scripts/fuzzy_optuna.py`: calibra o controlador fuzzy com os trials do Optuna,
+  compara com z estático e gera os gráficos da Semana 5.
+- `src/surrogate_model.c`: inferência MLP em C, gerada pelo pipeline.
+- `sma_solve_ex` / `sma_solve_adaptive` / `FuzzyParams` em `include/sma.h` e
+  `src/sma.c`: SMA com z fuzzy por geração (diversidade e estagnação).
+- `results/surrogate/`: dataset, métricas por instância, gráfico de regressão,
+  comparativos de tempo e curva de aprendizado.
+- `results/fuzzy/`: calibração, funções de pertinência, histórico temporal de `z`
+  e comparação com z estático.
+
+Para reproduzir as Semanas 4 e 5, instale `requirements-advanced.txt` e execute
+`make semanas45` (detalhes em `docs/SEMANAS_4_5.md`).

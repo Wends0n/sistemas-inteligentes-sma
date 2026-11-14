@@ -63,10 +63,19 @@ incluído como código próprio. As matrizes resultantes estão em `data/` e
 | 60 reavaliações independentes | Fitness exportado corresponde à solução exportada |
 | 30.000 registros | Integridade e monotonicidade do melhor histórico |
 | Sanitizadores disponíveis | Ausência de falhas detectadas de memória/UB nos testes executados |
+| Controlador fuzzy adaptativo | Saída limitada a [0,012; 0,0681] (extremos dos singletons) e reprodutível para a mesma semente |
+| Pipeline MLP | Métricas em conjunto de teste separado e predições reavaliadas no makespan real |
 
 O oráculo Python usa o mesmo gerador pseudoaleatório e não é uma execução do
 MATLAB. A validação não equivale a uma prova formal nem a equivalência bit a bit
 com todos os resultados possíveis da demo original.
+
+## Extensões Semana 4/5
+
+O teste C agora também executa `sma_solve_adaptive` duas vezes com a mesma
+semente, compara os históricos de `z` e verifica os limites de saída. O pipeline
+MLP gera métricas hold-out e um CSV com o makespan real; as soluções do surrogate
+são reavaliadas por `pfs_makespan`, sem usar a predição como prova de viabilidade.
 
 ## Somas de verificação
 
