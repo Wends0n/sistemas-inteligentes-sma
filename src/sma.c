@@ -51,9 +51,42 @@ double sma_weight(double s, double best, double worst, int rank, int n, double u
  * @return 0 em sucesso; -1 se parâmetros inválidos, falta de memória ou
  *         aptidão/coordenada não finita.
  */
-int sma_solve(const SmaConfig *c, Objective f, void *ctx,
-              double *best_x, double *history, double *best_f)
+static double clamp01(double v) { return fmin(1.0, fmax(0.0, v)); }
+
+/* Controlador fuzzy Takagi-Sugeno de ordem zero (contrato em sma.h).
+ * Regras: R1 (D baixa, E baixa), R2 (D baixa, E alta), R3 (D alta, E baixa),
+ * R4 (D alta, E alta). Diversidade baixa e estagnação alta pedem mais
+ * reinicialização (exploração); diversidade alta e estagnação baixa pedem
+ * menos (refinamento). Os singletons padrão vêm de scripts/fuzzy_optuna.py. */
+static double ramp_down(double v, const double r[2]) { return clamp01((r[1] - v) / (r[1] - r[0])); }
+static double ramp_up(double v, const double r[2])   { return clamp01((v - r[0]) / (r[1] - r[0])); }
+
+void sma_fuzzy_defaults(FuzzyParams *fp) {
+    /* Calibração: results/fuzzy/calibracao_optuna.json. */
+    *fp = (FuzzyParams){
+        .div_low  = {0.056, 0.132}, .div_high = {0.108, 0.198},
+        .stag_low = {0.014, 0.537}, .stag_high = {0.204, 1.000},
+        .out = {0.0325, 0.0681, 0.012, 0.0619},   /* R1, R2, R3, R4 */
+        .stag_window = 0.49
+    };}
+
+double sma_fuzzy_z(const FuzzyParams *fp, double diversity, double stagnation) {
+    double dl = ramp_down(diversity, fp->div_low),  dh = ramp_up(diversity, fp->div_high);
+    double sl = ramp_down(stagnation, fp->stag_low), sh = ramp_up(stagnation, fp->stag_high);
+    double w[4] = { dl * sl, dl * sh, dh * sl, dh * sh };
+    double num = 0.0, den = 0.0;
+    for (int i = 0; i < 4; ++i) { num += w[i] * fp->out[i]; den += w[i]; }
+    return den > 1e-12 ? num / den : 0.04;
+}
+
+static int sma_solve_impl(const SmaConfig *c, Objective f, void *ctx,
+              double *best_x, double *history, double *best_f,
+              const FuzzyParams *fp, double *z_history,
+              double *div_history, double *stag_history)
 {
+    const int adaptive = fp != NULL;
+    FuzzyParams dflt; sma_fuzzy_defaults(&dflt);   /* janela de estagnação nos traços */
+    const double stag_window = adaptive ? fp->stag_window : dflt.stag_window;
     /* ---- Validação de parâmetros (falha cedo, nada é alocado) ---- */
     if (!c || !f || !best_x || !history || !best_f ||
         c->population < 1 || c->population > 10000 ||
@@ -85,6 +118,7 @@ int sma_solve(const SmaConfig *c, Objective f, void *ctx,
     for (size_t k = 0; k < count; k++)
         x[k] = c->lower + (c->upper - c->lower) * rng_uniform(&rng);
 
+    int stagnant = 0;
     for (int t = 1; t <= c->iterations; t++) {
 
         /* ---- 1 e 2. Projeção, avaliação e ranking ---- */
@@ -118,7 +152,32 @@ int sma_solve(const SmaConfig *c, Objective f, void *ctx,
         if (best < *best_f) {
             *best_f = best;
             memcpy(best_x, x + (size_t)rank[0] * d, (size_t)d * sizeof *x);
+            stagnant = 0;
+        } else {
+            stagnant++;
         }
+
+        double z_current = c->z;
+        if (adaptive || div_history || stag_history) {
+            double diversity = 0.0;
+            for (int j = 0; j < d; ++j) {
+                double mean = 0.0, var = 0.0;
+                for (int i = 0; i < n; ++i) mean += x[(size_t)i * d + j];
+                mean /= n;
+                for (int i = 0; i < n; ++i) {
+                    double delta = x[(size_t)i * d + j] - mean;
+                    var += delta * delta;
+                }
+                var /= n;
+                diversity += sqrt(var) / (c->upper - c->lower);
+            }
+            diversity = clamp01(diversity / d);
+            double stagnation = clamp01((double)stagnant / fmax(10.0, stag_window * c->iterations));
+            if (adaptive) z_current = sma_fuzzy_z(fp, diversity, stagnation);
+            if (div_history)  div_history[t - 1]  = diversity;
+            if (stag_history) stag_history[t - 1] = stagnation;
+        }
+        if (z_history) z_history[t - 1] = z_current;
 
         /* Parâmetros que decaem ao longo das iterações:
          *   b = 1 - t/T   vai de ~1 a 0 (amplitude da contração)
@@ -131,7 +190,7 @@ int sma_solve(const SmaConfig *c, Objective f, void *ctx,
          * pode ser sorteado como A ou B por agentes seguintes. Já s, w e
          * best_x permanecem fixos durante todo o passo. */
         for (int i = 0; i < n; i++) {
-            if (rng_uniform(&rng) < c->z) {
+            if (rng_uniform(&rng) < z_current) {
                 /* (a) Reinicialização com probabilidade z. Um ÚNICO escalar u
                  * é compartilhado por todas as coordenadas, como na demo
                  * original. Com limites iguais em todas as dimensões, o
@@ -176,4 +235,25 @@ int sma_solve(const SmaConfig *c, Objective f, void *ctx,
 done:
     free(x); free(w); free(s); free(vb); free(vc); free(rank);
     return status;
+}
+
+
+int sma_solve_ex(const SmaConfig *c, Objective f, void *ctx,
+                 double *best_x, double *history, double *best_f,
+                 const FuzzyParams *fp, double *z_history,
+                 double *div_history, double *stag_history) {
+    return sma_solve_impl(c, f, ctx, best_x, history, best_f, fp,
+                          z_history, div_history, stag_history);
+}
+
+int sma_solve(const SmaConfig *c, Objective f, void *ctx,
+              double *best_x, double *history, double *best_f) {
+    return sma_solve_impl(c, f, ctx, best_x, history, best_f, NULL, NULL, NULL, NULL);
+}
+
+int sma_solve_adaptive(const SmaConfig *c, Objective f, void *ctx,
+                       double *best_x, double *history, double *best_f,
+                       double *z_history) {
+    FuzzyParams fp; sma_fuzzy_defaults(&fp);
+    return sma_solve_impl(c, f, ctx, best_x, history, best_f, &fp, z_history, NULL, NULL);
 }
