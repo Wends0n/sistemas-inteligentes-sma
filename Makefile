@@ -4,7 +4,7 @@ CPPFLAGS = -Iinclude
 LDLIBS = -lm
 CORE = src/sma.c src/pfs.c src/rng.c
 HEADERS = include/sma.h include/pfs.h include/rng.h
-.PHONY: all test experiment plot clean sanitize
+.PHONY: all test experiment plot clean sanitize semanas45
 all: build/sma_pfs
 build:
 	mkdir -p build
@@ -22,5 +22,8 @@ plot:
 sanitize: | build
 	$(CC) $(CPPFLAGS) -std=c11 -g -O1 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer tests/test.c $(CORE) $(LDLIBS) -o build/test_sanitize
 	./build/test_sanitize
+semanas45:
+	python3 scripts/fuzzy_optuna.py
+	python3 scripts/surrogate_fuzzy.py --learning-curve
 clean:
 	rm -rf build
