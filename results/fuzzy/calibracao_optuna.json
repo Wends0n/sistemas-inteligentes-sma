@@ -1,0 +1,49 @@
+{
+  "fonte_saida": "results/optuna/trials.csv",
+  "trials_total": 30,
+  "trials_top25": 8,
+  "z_top25_quantis_q10_q50_q75_q90": [
+    0.01199879173141527,
+    0.03247759743424125,
+    0.0618889066335977,
+    0.06811202915258939
+  ],
+  "out": [
+    0.0325,
+    0.0681,
+    0.012,
+    0.0619
+  ],
+  "div_low": [
+    0.056,
+    0.132
+  ],
+  "div_high": [
+    0.108,
+    0.198
+  ],
+  "stag_low": [
+    0.014,
+    0.537
+  ],
+  "stag_high": [
+    0.204,
+    1.0
+  ],
+  "stag_window": 0.49,
+  "diversidade_percentis_P10_P50_P90": [
+    0.056,
+    0.12,
+    0.198
+  ],
+  "estagnacao_bruta_percentis_P25_P50_P80": [
+    11.0,
+    52.0,
+    147.0
+  ],
+  "sementes_calibracao": "100..109",
+  "populacao": 30,
+  "iteracoes": 300,
+  "z_execucao_estatica": 0.03,
+  "defaults_em_C_coincidem_com_calibracao": true
+}

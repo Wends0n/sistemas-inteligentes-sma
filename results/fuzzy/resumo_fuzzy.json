@@ -1,0 +1,203 @@
+{
+  "calibracao": {
+    "fonte_saida": "results/optuna/trials.csv",
+    "trials_total": 30,
+    "trials_top25": 8,
+    "z_top25_quantis_q10_q50_q75_q90": [
+      0.01199879173141527,
+      0.03247759743424125,
+      0.0618889066335977,
+      0.06811202915258939
+    ],
+    "out": [
+      0.0325,
+      0.0681,
+      0.012,
+      0.0619
+    ],
+    "div_low": [
+      0.056,
+      0.132
+    ],
+    "div_high": [
+      0.108,
+      0.198
+    ],
+    "stag_low": [
+      0.014,
+      0.537
+    ],
+    "stag_high": [
+      0.204,
+      1.0
+    ],
+    "stag_window": 0.49,
+    "diversidade_percentis_P10_P50_P90": [
+      0.056,
+      0.12,
+      0.198
+    ],
+    "estagnacao_bruta_percentis_P25_P50_P80": [
+      11.0,
+      52.0,
+      147.0
+    ],
+    "sementes_calibracao": "100..109",
+    "populacao": 30,
+    "iteracoes": 300,
+    "z_execucao_estatica": 0.03,
+    "defaults_em_C_coincidem_com_calibracao": true
+  },
+  "comparacao": [
+    {
+      "instancia": "ta001",
+      "configuracao": "Estático baseline (z=0,03)",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1297.6666666666667,
+      "desvio": 4.121711507023076,
+      "melhor": 1283.0,
+      "pior": 1308.0,
+      "z_medio": 0.030000000000000006
+    },
+    {
+      "instancia": "ta001",
+      "configuracao": "Estático Optuna (z=0.0164)",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1298.6333333333334,
+      "desvio": 7.350736924508544,
+      "melhor": 1286.0,
+      "pior": 1324.0,
+      "z_medio": 0.016352237670518927
+    },
+    {
+      "instancia": "ta001",
+      "configuracao": "Fuzzy adaptativo",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1300.6666666666667,
+      "desvio": 9.143806395713922,
+      "melhor": 1286.0,
+      "pior": 1324.0,
+      "z_medio": 0.046216878840720337
+    },
+    {
+      "instancia": "ta001",
+      "configuracao": "Ref.: Optuna completo (pop=60, z=0.0164)",
+      "populacao": 60,
+      "avaliacoes": 18000,
+      "execucoes": 30,
+      "makespan_medio": 1297.8,
+      "desvio": 2.4410286130349177,
+      "melhor": 1297.0,
+      "pior": 1305.0,
+      "z_medio": 0.016352237670518927
+    },
+    {
+      "instancia": "ta011",
+      "configuracao": "Estático baseline (z=0,03)",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1666.0,
+      "desvio": 30.565926487986022,
+      "melhor": 1619.0,
+      "pior": 1759.0,
+      "z_medio": 0.030000000000000006
+    },
+    {
+      "instancia": "ta011",
+      "configuracao": "Estático Optuna (z=0.0164)",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1653.3333333333333,
+      "desvio": 20.028141121472288,
+      "melhor": 1618.0,
+      "pior": 1691.0,
+      "z_medio": 0.016352237670518927
+    },
+    {
+      "instancia": "ta011",
+      "configuracao": "Fuzzy adaptativo",
+      "populacao": 30,
+      "avaliacoes": 9000,
+      "execucoes": 30,
+      "makespan_medio": 1655.4666666666667,
+      "desvio": 27.840349449517763,
+      "melhor": 1615.0,
+      "pior": 1740.0,
+      "z_medio": 0.03867700196950446
+    },
+    {
+      "instancia": "ta011",
+      "configuracao": "Ref.: Optuna completo (pop=60, z=0.0164)",
+      "populacao": 60,
+      "avaliacoes": 18000,
+      "execucoes": 30,
+      "makespan_medio": 1654.7666666666667,
+      "desvio": 24.51133915408207,
+      "melhor": 1618.0,
+      "pior": 1702.0,
+      "z_medio": 0.016352237670518927
+    }
+  ],
+  "testes": [
+    {
+      "instancia": "ta001",
+      "fuzzy_vs": "Estático baseline (z=0,03)",
+      "diferenca_media_makespan": 3.0,
+      "wilcoxon_p": 0.1250687736657919,
+      "vitorias_fuzzy": 5,
+      "empates": 18,
+      "derrotas": 7
+    },
+    {
+      "instancia": "ta001",
+      "fuzzy_vs": "Estático Optuna (z=0.0164)",
+      "diferenca_media_makespan": 2.033333333333333,
+      "wilcoxon_p": 0.23107319627794864,
+      "vitorias_fuzzy": 2,
+      "empates": 22,
+      "derrotas": 6
+    },
+    {
+      "instancia": "ta011",
+      "fuzzy_vs": "Estático baseline (z=0,03)",
+      "diferenca_media_makespan": -10.533333333333333,
+      "wilcoxon_p": 0.07021942475630832,
+      "vitorias_fuzzy": 19,
+      "empates": 0,
+      "derrotas": 11
+    },
+    {
+      "instancia": "ta011",
+      "fuzzy_vs": "Estático Optuna (z=0.0164)",
+      "diferenca_media_makespan": 2.1333333333333333,
+      "wilcoxon_p": 0.5236451772230641,
+      "vitorias_fuzzy": 12,
+      "empates": 0,
+      "derrotas": 18
+    }
+  ],
+  "variacao_z": {
+    "ta001": {
+      "z_min": 0.011999999999999999,
+      "z_max": 0.06810000000000001,
+      "z_desvio": 0.02051899518123885,
+      "z_distintos_6casas": 99,
+      "fracao_z_em_singleton_R1": 0.07666666666666666
+    },
+    "ta011": {
+      "z_min": 0.011999999999999999,
+      "z_max": 0.0681,
+      "z_desvio": 0.01909919729030848,
+      "z_distintos_6casas": 111,
+      "fracao_z_em_singleton_R1": 0.20333333333333334
+    }
+  }
+}
