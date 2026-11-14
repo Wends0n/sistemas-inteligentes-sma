@@ -73,6 +73,41 @@ int main(void) {
     c.z=1;assert(sma_solve(&c,sphere,NULL,x,h,&best)==0);
     c.z=NAN;assert(sma_solve(&c,sphere,NULL,x,h,&best)==-1);
     c.z=0;c.lower=c.upper;assert(sma_solve(&c,sphere,NULL,x,h,&best)==-1);
+    c=(SmaConfig){10,100,6,-1,1,0.03,42};
+    double zh[100],zh2[100],ha[100],ha2[100],xa[6],xa2[6],ba,ba2;
+    assert(sma_solve_adaptive(&c,sphere,NULL,xa,ha,&ba,zh)==0);
+    assert(sma_solve_adaptive(&c,sphere,NULL,xa2,ha2,&ba2,zh2)==0);
+    assert(ba==ba2 && !memcmp(zh,zh2,sizeof zh));
+    for(int t=0;t<100;t++) assert(zh[t]>=0.012 && zh[t]<=0.085);
+    {   /* Controlador: limites, regras nos cantos e parâmetros externos. */
+        FuzzyParams fp; sma_fuzzy_defaults(&fp);
+        assert(fabs(sma_fuzzy_z(&fp,0.0,0.0)-fp.out[0])<1e-12);   /* R1 */
+        assert(fabs(sma_fuzzy_z(&fp,0.0,1.0)-fp.out[1])<1e-12);   /* R2 */
+        assert(fabs(sma_fuzzy_z(&fp,1.0,0.0)-fp.out[2])<1e-12);   /* R3 */
+        assert(fabs(sma_fuzzy_z(&fp,1.0,1.0)-fp.out[3])<1e-12);   /* R4 */
+        for(int i=0;i<=20;i++) for(int j=0;j<=20;j++) {
+            double zz=sma_fuzzy_z(&fp,i/20.0,j/20.0);
+            assert(zz>=fp.out[2]-1e-12 && zz<=fp.out[1]+1e-12);
+        }
+        /* fp == NULL: z fixo; deve reproduzir sma_solve e registrar traços. */
+        double zt[100],dt[100],st[100],xb[6],hb[100],bb;
+        assert(sma_solve_ex(&c,sphere,NULL,xb,hb,&bb,NULL,zt,dt,st)==0);
+        double xs[6],hs[100],bs; assert(sma_solve(&c,sphere,NULL,xs,hs,&bs)==0);
+        assert(bb==bs && !memcmp(hb,hs,sizeof hb));
+        for(int t=0;t<100;t++) assert(zt[t]==c.z && dt[t]>=0 && dt[t]<=1 && st[t]>=0 && st[t]<=1);
+        /* sma_solve_adaptive == sma_solve_ex com os padrões. */
+        double zx[100],dx[100],sx[100];
+        assert(sma_solve_ex(&c,sphere,NULL,xb,hb,&bb,&fp,zx,dx,sx)==0);
+        assert(bb==ba && !memcmp(zx,zh,sizeof zx));
+        /* Rastro coerente: z da geração t = controlador(D_t, E_t). */
+        for(int t=0;t<100;t++) assert(fabs(zx[t]-sma_fuzzy_z(&fp,dx[t],sx[t]))<1e-15);
+    }
+    {   /* Objetivo caro simulado devolve o mesmo valor do real. */
+        Pfs q; double key[20]; assert(pfs_generate(&q,20,5,873654221)==0);
+        for(int i=0;i<20;i++) key[i]=sin(i*1.7);
+        double r0=pfs_objective(key,20,&q); pfs_set_cost_repeat(50);
+        assert(pfs_objective_costly(key,20,&q)==r0); pfs_set_cost_repeat(1);
+    }
     /* Traços pequenos para comparação independente em Python. */
     FILE *f=fopen("build/parity.csv","w");assert(f);
     fprintf(f,"case,iteration,best\n");
@@ -82,6 +117,6 @@ int main(void) {
         for(int t=0;t<12;t++)fprintf(f,"%d,%d,%.17g\n",k,t+1,h[t]);
     }
     assert(fclose(f)==0);
-    puts("OK: RNG, Taillard, SPV, makespan, pesos, limites, empate, contagem, reproducibilidade e parametros.");
+    puts("OK: RNG, Taillard, SPV, makespan, pesos, limites, empate, contagem, reproducibilidade, fuzzy adaptativo e parametros.");
     return 0;
 }
