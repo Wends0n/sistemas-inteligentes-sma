@@ -56,3 +56,10 @@ double pfs_objective(const double *x,int d,void *context) {
     int64_t v=pfs_makespan(p,perm);
     return v<0 ? NAN : (double)v;
 }
+static int cost_repeat = 1;
+void pfs_set_cost_repeat(int repeat) { cost_repeat = repeat < 1 ? 1 : repeat; }
+double pfs_objective_costly(const double *x,int d,void *context) {
+    volatile double v = 0.0;
+    for (int r=0;r<cost_repeat;r++) v = pfs_objective(x,d,context);
+    return v;
+}

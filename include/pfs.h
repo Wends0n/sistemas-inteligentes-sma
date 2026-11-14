@@ -13,4 +13,9 @@ int pfs_valid(const int *permutation, int n);
 /* -1 se permutação ou dimensão inválida; tempos das instâncias devem ser positivos. */
 int64_t pfs_makespan(const Pfs *p, const int *permutation);
 double pfs_objective(const double *keys, int dimension, void *context);
+/* Objetivo "caro" simulado: repete o cálculo do makespan `pfs_cost_repeat`
+ * vezes (padrão 1) para emular um simulador custoso (CFD/FEA) nos benchmarks
+ * de tempo da Semana 4. Mesmo valor de pfs_objective. */
+void pfs_set_cost_repeat(int repeat);
+double pfs_objective_costly(const double *keys, int dimension, void *context);
 #endif
